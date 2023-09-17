@@ -3,12 +3,21 @@ const app = express();
 //Import data base, save it on an array
 const { pokemon }=require('./pokedex.json');
 
+//Necesary to show the data as JSON
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 //Verbs HTTP (to make petitions): GET, POST (save data), PATCH (update a single data), PUT (update all the data), DELETE (delete)
 app.get('/', (req,res,next)=>{
     
     return res.status(200).send('Welcome to Pokedex');
     //Alternative res.status(200)
     //            res.send('Welcome to pokedex')
+});
+
+app.post("/pokemon", (req,res,next)=>{
+    //We receive the data from the post and we show it as JSON
+    return res.status(200).send(req.body.name);
 });
 
 //Return all the data when you type the following URL:

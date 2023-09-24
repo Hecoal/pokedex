@@ -16,13 +16,18 @@ app.use(express.urlencoded({ extended: true }));
 //Verbs HTTP (to make petitions): GET, POST (save data), PATCH (update a single data), PUT (update all the data), DELETE (delete)
 app.get('/', (req,res,next)=>{
     
-    return res.status(200).send('Welcome to Pokedex');
+    return res.status(200).json({code:1, message:'Welcome to Pokedex'});
     //Alternative res.status(200)
     //            res.send('Welcome to pokedex')
 });
 
 //Eevery route with /pokemon, will do this:
 app.use('/pokemon',pokemon);
+
+//For invalid URLS
+app.use((req,res,next)=>{
+    return res.status(404).json({code:404, message:'URL not found'});
+});
 
 //This function doesnt have a name, and opens a port. Is the same as function(){}
 app.listen(process.env.PORT || 3000,()=>{

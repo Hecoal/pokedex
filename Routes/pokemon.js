@@ -3,9 +3,27 @@ const pokemon = express.Router();
 //Import data base, save it on an array
 const db = require('../Config/database');
 
-pokemon.post("/", (req,res,next)=>{
-    //We receive the data from the post and we show it as JSON
-    return res.status(200).send(req.body.name);
+//Create a new Pokemon to my DB with user data
+pokemon.post("/", async(req,res,next)=>{
+    const {pok_name,pok_height,pok_weight, pok_base_experience} = req.body;
+
+    //To check if every field is complete
+    if(pok_name && pok_height && pok_weight && pok_base_experience){
+        let query = "INSERT INTO pokemon (pok_name, pok_height, pok_weight, pok_base_experience)";
+        //Insert data
+        query+=` VALUES('${pok_name}', ${pok_height}, ${pok_weight}, ${pok_base_experience})`;
+    
+        //This will let us know what has changed
+        const rows= await db.query(query);
+        if(rows.affectedRows==1){
+            //We receive the data from the post and we show it as JSON
+            return res.status(201).json({code:201, message:'Pokemon Successfuly Inserted'});
+        }
+        return res.status(500).json({code:500, message:'An error ocurred!'});
+    }
+    
+    return res.status(500).json({code:500, message:'Empty fields'});
+    
 });
 
 //Waits for the query
@@ -19,7 +37,7 @@ pokemon.get('/:id([0-9]{1,3})',async(req,res,next)=>{
     const id = req.params.id;
     if(id>=1 && id<=722){
         const pkmn= await db.query("SELECT * FROM pokemon WHERE pok_id="+id+";");
-        return res.status(200).json({code:1,message:pkmn});
+        return res.status(200).json({code:200,message:pkmn});
     }
     return res.status(404).send({code:404, message:'Pokemon not found'});
 });
@@ -29,7 +47,7 @@ pokemon.get('/:name([A-Za-z]+)',async(req,res,next)=>{
     const name = req.params.name;
     const pkmn = await db.query("SELECT * FROM pokemon WHERE pok_name='"+ name+"';");
     if(pkmn.length>0){
-        return res.status(200).json({code:1,message:pkmn});
+        return res.status(200).json({code:200,message:pkmn});
     }
     return res.status(404).send({code:404, message:'Pokemon not found'});
 

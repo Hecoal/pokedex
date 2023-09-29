@@ -26,6 +26,53 @@ pokemon.post("/", async(req,res,next)=>{
     
 });
 
+//Delete a Pokemon from an ID
+pokemon.delete("/:id([0-9]{1,3})",async(req,res,next)=>{
+    const query = `DELETE FROM pokemon WHERE pok_id=${req.params.id}`;
+    const rows= await db.query(query);
+
+    if(rows.affectedRows==1){
+        return res.status(200).json({code:200, message:'Pokemon Deleted Successfully '});
+    }
+    return res.status(404).json({code:404, message:'Pokemon Not Found!'});
+});
+
+//Update a pokemon
+pokemon.put("/:id([0-9]{1,3})",async(req,res,next)=>{
+    const {pok_name,pok_height,pok_weight, pok_base_experience} = req.body;
+
+    if(pok_name && pok_height && pok_weight && pok_base_experience){
+
+        let query = `UPDATE pokemon SET pok_name='${pok_name}',pok_height=${pok_height},`;
+        query+=`pok_weight=${pok_weight},pok_base_experience=${pok_base_experience} WHERE pok_id=${req.params.id}`;
+
+        //This will let us know what has changed
+        const rows= await db.query(query);
+        if(rows.affectedRows==1){
+            //We receive the data from the post and we show it as JSON
+            return res.status(200).json({code:200, message:'Pokemon Successfuly Updated'});
+        }
+        return res.status(500).json({code:500, message:'An error ocurred!'});
+    }
+    return res.status(500).json({code:500, message:'Empty Fields'});
+});
+
+//Update a single pokemon data
+pokemon.patch("/:id([0-9]{1,3})",async(req,res,next)=>{
+        if(req.body.pok_name){
+            let query = `UPDATE pokemon SET pok_name='${req.body.pok_name}' WHERE pok_id=${req.params.id}`;
+
+            //This will let us know what has changed
+            const rows= await db.query(query);
+            if(rows.affectedRows==1){
+                //We receive the data from the post and we show it as JSON
+                return res.status(200).json({code:200, message:'Pokemon Successfuly Updated'});
+            }
+            return res.status(500).json({code:500, message:'Something went wrong'});
+        }
+        return res.status(500).json({code:500, message:'Empty fields'});
+});
+
 //Waits for the query
 pokemon.get('/', async(req,res,next)=>{
     const pkmn= await db.query('SELECT * FROM pokemon');

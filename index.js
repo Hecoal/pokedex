@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 //Import pokemon
 const pokemon = require('./Routes/pokemon.js');
+const user = require('./Routes/user.js');
 
 app.use(morgan('dev'));
 
@@ -21,8 +22,9 @@ app.get('/', (req,res,next)=>{
     //            res.send('Welcome to pokedex')
 });
 
-//Eevery route with /pokemon, will do this:
+//Every route with /pokemon, will do this:
 app.use('/pokemon',pokemon);
+app.use('/user', user);
 
 //For invalid URLS
 app.use((req,res,next)=>{

@@ -11,7 +11,9 @@ const user = require('./Routes/user.js');
 const auth = require('./Middleware/auth.js')
 const notFound=require('./Middleware/notFound.js');
 const index = require('./Middleware/index.js');
+const cors = require('./Middleware/cors.js');
 
+app.use(cors);
 app.use(morgan('dev'));
 
 //Necesary to show the data as JSON
